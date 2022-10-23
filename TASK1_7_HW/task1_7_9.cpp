@@ -6,5 +6,45 @@
 // фамилий и номеров групп студентов, имеющих оценки, равные только 4 или 5.
 
 #include <iostream>
+#include <string>
 
 using namespace std;
+
+struct student
+{
+    string stName; // фамилия и инициалы студента
+    int stGroupe;  // номер группы студента
+    int stSES[5];  // успеваемость студента (массив из пяти элементов)
+};
+
+void fillStudentStruct(student *st, int n) // Функция для заполнения массива элементами структуры student в количестве stNum
+{
+    for (int i(0); i < n; ++i) // в цикле по количеству студентов
+    {
+        cout << "Enter student name: ";
+        cin >> st[i].stName; // заполняем поле stName в текущем элементе структуры
+        cout << "Enter group number: ";
+        cin >> st[i].stGroupe; // Заполняем поле stGroupe в текущем элементе структуры
+        cout << "Enter student grades (split with comma): ";
+        for (int j(0); j < 5; ++j) // В цикле
+        {
+            cout << "\n"
+                 << j + 1
+                 << "grade: ";
+            cin >> st[i].stSES[j]; // Заполняем текущее значение stSES в текущем элементе структуры
+        }
+    }
+}
+
+int main()
+{
+    int stNum; // Число студентов
+    cout << "Enter number of students: ";
+    cin >> stNum;
+
+    student *st = new student[stNum]; // Создаем новый элемент структуры с динамическим выделением памяти с помощью указателя (*)
+    fillStudentStruct(st, stNum);     // Заполнение массива элементами структуры student в количестве stNum
+    // sortStudentStruct(st, stNum);     // Сортировка массива элементов структуры student по возрастанию среднего балла
+    // showStudentStruct(st, stNum);     // Вывод фамилий и номеров групп студентов, имеющих оценки, равные только 4 или 5 (>=4)
+    return 0;
+}
