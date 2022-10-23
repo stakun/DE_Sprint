@@ -5,8 +5,7 @@
 // которые находят максимальный и минимальный элементы этого двумерного массива.
 
 #include <iostream>
-#include <ctime>
-#include <cstdlib>
+
 using namespace std;
 
 const int SIZE = 5; // Задаём размерность массива
