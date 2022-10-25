@@ -17,10 +17,10 @@ using namespace std;
 
 struct train
 {
-    string dest; // название пункта назначения
-    int trNum;   // номер поезда
-    int hh;      // час времени отправления
-    int mm;      // минуты времени отправления
+    char dest[255]; // название пункта назначения
+    int trNum;      // номер поезда
+    int hh;         // час времени отправления
+    int mm;         // минуты времени отправления
 };
 
 void PrintTime(int hours, int minutes)
@@ -42,9 +42,10 @@ void fillTrainStruct(train *tr, int n) // Функция для заполнен
 {
     for (int i = 0; i < n; i++) // в цикле по количеству поездов
     {
-        cin.ignore(32767, '\n'); // игнорируем символы перевода строки "\n" во входящем потоке длиной 32767 символов
+        // cin.ignore(32767, '\n'); // игнорируем символы перевода строки "\n" во входящем потоке длиной 32767 символов
         cout << "Enter train " << i + 1 << " destignation: " << endl;
-        getline(cin, tr[i].dest); // полностью извлекаем строку в переменную trDest
+        // getline(cin, tr[i].dest); // полностью извлекаем строку в переменную trDest
+        cin >> tr[i].dest; // Заполняем поле dest в текущем элементе структуры
         cout << "Enter train " << i + 1 << " number: " << endl;
         cin >> tr[i].trNum; // Заполняем поле trNum в текущем элементе структуры
         cout << "Enter train " << i + 1 << " departure time:" << endl;
@@ -87,7 +88,7 @@ void showTrainInfo(train *tr, int n) // Функция для отображен
             cout << "----------------------------" << endl;
             cout << "Destination : " << tr[i].dest << endl;
             cout << "Number : " << tr[i].trNum << endl;
-            cout << "Arrival : ";
+            cout << "Departure : ";
             PrintTime(tr[i].hh, tr[i].mm);
             cout << endl;
             cout << "----------------------------" << endl;
@@ -100,7 +101,49 @@ void showTrainInfo(train *tr, int n) // Функция для отображен
 
 void sortTrainStructbyDest(train *tr, int n) // Функция для сортировки массива элементов структуры train по пункту назначения
 {
-    //
+    for (int i = 0; i < n; i++) // в цикле по количеству поездов
+    {
+        for (int j = 0; j < n - i; j++) // в цикле по количеству поездов минус уже отсортированные
+        {
+            //Сравниваем 2 строки
+            // strcmp - возвращает 1 если левая строка > правой строки
+            //возвращает 0 если левая строка == правой строки
+            //возвращает -1 если левая < правой строки
+            int res = strcmp(tr[j].dest, tr[j + 1].dest);
+            //Если левая строка > правой то свапаем
+            if (res == 1)
+                swap(tr[j], tr[j + 1]);
+            //если пункты назначения равны
+            else if (res == 0)
+            {
+                //Проверяем уже по времени
+                //Если час отправления левого поезда > правого, то свапаем
+                if (tr[j].hh > tr[j + 1].hh)
+                    swap(tr[j], tr[j + 1]);
+                else if (tr[j].hh == tr[j + 1].hh)
+                {
+                    //Аналогично часам
+                    if (tr[j].mm > tr[j + 1].mm)
+                        swap(tr[j], tr[j + 1]);
+                }
+            }
+        }
+    }
+}
+
+void showStructure(train *tr, int n) // Функция для вывода структуры на экран
+{
+    cout << "-----------------------------------\n"
+         << "Num\t|\tDestignation\t|\tDeparture"
+         << "-----------------------------------\n"
+         << endl;               // Шапка таблицы
+    for (int i = 0; i < n; i++) // в цикле по количеству поездов
+    {
+        cout << tr[i].trNum << "\t|\t"
+             << tr[i].dest << "\t|\t";
+        PrintTime(tr[i].hh, tr[i].mm);
+        cout << endl;
+    }
 }
 
 int main() // Главная программа
@@ -110,8 +153,14 @@ int main() // Главная программа
     cin >> trNum;                 // Задаем число поездов (размер структуры traim)
     train *tr = new train[trNum]; // Создаем новый элемент структуры с динамическим выделением памяти с помощью указателя (*)
     fillTrainStruct(tr, trNum);   // Заполнение массива элементами структуры train в количестве trNum
-    // sortTrainStructbyNum(tr, trNum); // Сортировка массива элементов структуры train по возрастанию номера поезда
-    showTrainInfo(tr, trNum); // Вывод информации о поезде по введенному номеру поезду
-    // sortTrainStructbyDest(tr, trNum); // Сортировка массива элементов структуры train по пункту назначения
+    cout << "Source structure" << endl;
+    showStructure(tr, trNum);        // Выводим структуру на экран
+    sortTrainStructbyNum(tr, trNum); // Сортировка массива элементов структуры train по возрастанию номера поезда
+    cout << "Sorting by train number" << endl;
+    showStructure(tr, trNum);         // Выводим структуру на экран
+    showTrainInfo(tr, trNum);         // Вывод информации о поезде по введенному номеру поезду
+    sortTrainStructbyDest(tr, trNum); // Сортировка массива элементов структуры train по пункту назначения
+    cout << "Sorting by destignation" << endl;
+    showStructure(tr, trNum); // Выводим структуру на экран
     return 0;
 }
