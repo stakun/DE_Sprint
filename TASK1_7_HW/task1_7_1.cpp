@@ -4,10 +4,15 @@
 // Программа должна указать, какое число больше или, если числа равны, вывести соответствующее сообщение.
 
 #include <iostream>
+//#include <clocale>
+//#include <windows.h>
+
 using namespace std;
 int main()
 {
     // setlocale(LC_ALL, "Russian");
+    // SetConsoleCP(1251);
+    // SetConsoleOutputCP(1251);
 
     float a, b;
     cout << "Enter first number and press <Enter> \n";
