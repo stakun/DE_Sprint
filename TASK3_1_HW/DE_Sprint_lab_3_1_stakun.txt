@@ -1,0 +1,74 @@
+
+
+# При попытке переноса файлов в HDFS возникла ошибка Name node is in safe mode
+# Решение нашлость тут: https://community.pivotal.io/s/article/HDFS-goes-into-readonly-mode-and-errors-out-with-Name-node-is-in-safe-mode?language=en_US
+# Отключаем safemode
+
+sudo -u hdfs hadoop dfsadmin -safemode leave
+
+# 4 файла с текстами с произведением Льва Толстого предварительно были сохранены
+# в файловой системе виртуальной машины, в папке vim на рабочем столе.
+# Переносим папку с файлами в HDFS
+
+hdfs dfs -copyFromLocal /home/cloudera/Desktop/vim /user/cloudera
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_26_11_2022_11_58_16.png
+
+# Выведем на экран содержимое папки /user/cloudera/vim
+
+hdfs dfs -ls /user/cloudera/vim
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_13_16_29.png
+
+# Сожмем 4 файла в один файл vim.txt в папке vim на десктопе локальной машины
+# Воспользуемся командой -getmerge с флагом -nl который вставляет пустую строку
+# между содержимым объединяемых файлов
+
+hdfs dfs -getmerge -nl /user/cloudera/vim/vim1.txt /user/cloudera/vim/vim2.txt /user/cloudera/vim/vim3.txt /user/cloudera/vim/vim4.txt /home/cloudera/Desktop/vim/vim.txt
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_13_52_45.png
+
+# Перенесем созданный файл обратно в HDFS
+
+hdfs dfs -copyFromLocal /home/cloudera/Desktop/vim/vim.txt /user/cloudera/vim
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_14_49_26.png
+
+# Установим для файла vim.txt режим доступа, который даст полный доступ владельцу
+# файла, а для сторонних пользователей возможность чтения и записи.
+# https://chmodcommand.com/chmod-764/
+
+hdfs dfs -chmod 764 /user/cloudera/vim/vim.txt
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_14_58_37.png
+
+# Выведем на экран информацию о размере полученного файла
+
+hdfs dfs -du -h /user/cloudera/vim/vim.txt
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_15_06_42.png
+
+
+# Изменим фактор репликации для папки /user/cloudera/vim на 2
+
+hdfs dfs -setrep -w 2 /user/cloudera/vim
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_15_39_51.png
+
+# Посчитаем количество строк в файле vim.txt
+
+hdfs dfs -cat /user/cloudera/vim/vim.txt | wc -l
+
+# Результат: 10276
+
+# Скриншот с результатом выполнения команды:
+# VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_15_49_45.png
+
+
