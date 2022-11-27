@@ -1,4 +1,7 @@
-
+# Стакун Алексей Вадимович
+# Курс: Инженер данных
+# Самостоятельное задание к теме 3.1 «Распределенные файловые системы: HDFS»
+# Практика HDFS
 
 # При попытке переноса файлов в HDFS возникла ошибка Name node is in safe mode
 # Решение нашлость тут: https://community.pivotal.io/s/article/HDFS-goes-into-readonly-mode-and-errors-out-with-Name-node-is-in-safe-mode?language=en_US
