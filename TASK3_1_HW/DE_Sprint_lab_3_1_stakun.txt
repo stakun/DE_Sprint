@@ -3,6 +3,8 @@
 # Самостоятельное задание к теме 3.1 «Распределенные файловые системы: HDFS»
 # Практика HDFS
 
+# 1. Работа с VirtualBox
+
 # При попытке переноса файлов в HDFS возникла ошибка Name node is in safe mode
 # Решение нашлость тут: https://community.pivotal.io/s/article/HDFS-goes-into-readonly-mode-and-errors-out-with-Name-node-is-in-safe-mode?language=en_US
 # Отключаем safemode
@@ -73,5 +75,98 @@ hdfs dfs -cat /user/cloudera/vim/vim.txt | wc -l
 
 # Скриншот с результатом выполнения команды:
 # VirtualBox_cloudera-quickstart-vm-5.13.0-0-virtualbox_27_11_2022_15_49_45.png
+
+
+# 2. Работа с Docker
+
+# Перенесем файл в HDFS. Сначала загрузим его в контейнер datanode-1
+# Выводим на экран список контейнеров, чтобы узнать id контейнера datanode-1
+
+docker ps
+
+# Скриншот с результатом выполнения команды:
+# 2022-11-28_22-32-07.png
+
+# Копируем каталог vim с файлами 4 частей Войны и Мира в папку vim контейнера
+# datanode-1 (ID a84039a69e04)
+
+docker cp D:\MyRep\DE_Sprint_HDFS\vim a84039a69e04:/vim
+
+# Запускаем в контейнере bash
+
+docker exec -it a84039a69e04 bash
+
+# Перехоодим в каталог vim
+
+root@a84039a69e04:/# cd vim
+
+# Выводим содержимое каталога vim на экран
+
+root@a84039a69e04:/vim# ls
+
+# Скриншот с результатом выполнения команды:
+# 2022-11-28_23-09-56.png
+
+# Перебрасываем папку vim в HDFS
+
+root@a84039a69e04:/# hdfs dfs -copyFromLocal vim /user/stakun/
+
+# Проверяем результат
+
+root@a84039a69e04:/# hdfs dfs -ls /user/stakun/vim/
+
+# Скриншоты с результатом выполнения команды:
+# 2022-11-28_23-22-38.png
+# 2022-11-28_23-25-42.png
+
+# Сожмем 4 файла в один файл vim.txt в папке vim на десктопе локальной машины
+# Воспользуемся командой -getmerge с флагом -nl который вставляет пустую строку
+# между содержимым объединяемых файлов
+
+root@a84039a69e04:/# hdfs dfs -getmerge -nl /user/stakun/vim/vim1.txt /user/stakun/vim/vim2.txt /user/stakun/vim/vim3.txt /user/stakun/vim/vim4.txt /vim/vim.txt
+
+# Перенесем созданный файл обратно в HDFS
+
+root@a84039a69e04:/# hdfs dfs -copyFromLocal vim /user/stakun/vim
+
+# Скриншот с результатом выполнения команды:
+# 2022-11-29_00-01-38.png
+
+# Установим для файла vim.txt режим доступа, который даст полный доступ владельцу
+# файла, а для сторонних пользователей возможность чтения и записи.
+# https://chmodcommand.com/chmod-764/
+
+root@a84039a69e04:/# hdfs dfs -chmod 764 /user/stakun/vim/vim.txt
+
+# Скриншот с результатом выполнения команды:
+# 2022-11-29_00-04-40.png
+
+# Выведем на экран информацию о размере полученного файла
+
+root@a84039a69e04:/# hdfs dfs -du -h /user/stakun/vim/vim.txt
+
+# Изменим фактор репликации для папки /user/stakun/vim на 2
+
+hdfs dfs -setrep -w 2 /user/stakun/vim/
+
+# Посчитаем количество строк в файле vim.txt
+
+hdfs dfs -cat /user/stakun/vim/vim.txt | wc -l
+
+# Результат: 10276
+
+# Скриншот с результатом выполнения команды:
+# 2022-11-29_00-16-11.png
+
+# Удаляем папку vim из datanode-1
+
+root@a84039a69e04:/# rm -rf vim
+ 
+
+
+
+
+
+
 
 
